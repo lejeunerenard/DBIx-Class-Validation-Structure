@@ -36,6 +36,9 @@
       },
       "runtime" : {
          "requires" : {
+            "DBIx::Class" : "0",
+            "Email::Valid" : "0",
+            "HTML::TagFilter" : "0",
             "perl" : "5.008005"
          }
       },

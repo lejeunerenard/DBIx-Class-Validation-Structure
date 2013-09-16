@@ -1,8 +1,7 @@
 use strict;
 use Test::More;
-use DBIx::Class::Validation::Structure;
 
-# replace with the actual test
 ok 1;
+use_ok('DBIx::Class::Validation::Structure');
 
 done_testing;

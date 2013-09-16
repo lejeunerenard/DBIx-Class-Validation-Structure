@@ -163,20 +163,21 @@ sub _val_text {
 
 	if ($mand && (!$value || $value =~ /bogus="1"/)) {  #tiny mce
 		return (undef, { msg => 'cannot be blank' });
-	} elsif ($len && (length($value) > $len) ) {
+	} elsif ($len && length($value) && (length($value) > $len) ) {
 		return (undef, { msg => 'is limited to '.$len.' characters' });
 	} elsif ($value && $value !~ /^([\w \.\,\-\'\"\!\$\#\%\=\&\:\+\(\)\?\;\n\r\<\>\/\@äÄöÖüÜßéÉáÁíÍ]*)$/) {
 		return (undef, { msg => 'can only use letters, 0-9 and -.,\'\"!&#$?:()=%<>;/@ (do not cut and paste from a Word document, you must Save As text only)' });
 	} else {
 		my $tf = new HTML::TagFilter;
-		if ($value) {	# This is to prevent empty strings from returning as the folder name.
-			return ($tf->filter($1));	# $1 is a tricky value. If value is blank $1 will be the name of the folder from the instance script.
+		if ($value) {	# This is to prevent empty strings from returning as the last regex match.
+			return ($tf->filter($1));	# $1 is a tricky value. If value is blank $1 will be the last regex match.
 		} else {
 			return '';	# Take that $1. Conditional statement to the face.
 		}
 	}
 }
 
+# _val_password is the same as _val_text but it also allows {}s
 sub _val_password {
 	my ($mand, $len, $value) = @_;
 
@@ -189,7 +190,7 @@ sub _val_password {
 
 	if ($mand && (!$value || $value =~ /bogus="1"/)) {  #tiny mce
 		return (undef, { msg => 'cannot be blank' });
-	} elsif ($len && (length($value) > $len) ) {
+	} elsif ($len && length($value) && (length($value) > $len) ) {
 		return (undef, { msg => 'is limited to '.$len.' characters' });
 	} elsif ($value && $value !~ /^([\w \.\,\-\'\"\!\$\#\%\=\&\:\+\(\)\{\}\?\;\n\r\<\>\/\@äÄöÖüÜßéÉáÁíÍ]*)$/) {
 		return (undef, { msg => 'can only use letters, 0-9 and -.,\'\"!&#$?:()=%<>;/@ (do not cut and paste from a Word document, you must Save As text only)' });
@@ -206,7 +207,7 @@ sub _val_password {
 sub _val_int {
 	my ($mand, $value) = @_;
 	if ( ( $value ne '0' or not defined $value) && !$value && $mand ) {
-		return (undef, { msg => 'cannot be blank.' });
+		return (undef, { msg => 'cannot be blank' });
 	} elsif ( ( $value or $value eq '0' ) and $value !~ /^[-]?\d+$/) {
 		return (undef, { msg => 'can only use numbers' });
 	} else {
@@ -229,7 +230,7 @@ sub _val_number {
 		return (undef, { msg => 'cannot be blank' });
 	} elsif ($len && (length($value) > $len) ) {
 		return (undef, { msg => 'is limited to '.$len.' characters' });
-	} elsif ($value !~ /^([-\.]*\d[\d\.-]*)$/) {
+	} elsif ($value && $value !~ /^([-\.]*\d[\d\.-]*)$/) {
 		return (undef, { msg => 'can only use numbers and . or -' });
 	} else {
 		if ($value ne '') {	# This is to prevent empty strings from returning as the folder name.
