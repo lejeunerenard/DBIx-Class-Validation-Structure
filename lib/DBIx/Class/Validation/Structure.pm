@@ -283,4 +283,16 @@ it under the same terms as Perl itself.
 
 =head1 SEE ALSO
 
+=over 8
+
+=item L<DBIx::Class>
+
+=item L<DBIx::Class::Validation>
+
+=item L<Email::Valid>
+
+=item L<HTML::TagFilter>
+
+=back
+
 =cut
