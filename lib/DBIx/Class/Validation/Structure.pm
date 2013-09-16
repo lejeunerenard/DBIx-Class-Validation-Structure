@@ -1,11 +1,11 @@
+package DBIx::Class::Validation::Structure;
+
 use strict;
 use warnings;
-package DBIx::Class::Validation::DBStruct;
+use 5.008_005;
+our $VERSION = '0.03';
 
-BEGIN {
-   use base qw/DBIx::Class/;
-   use Carp qw/croak/;
-};
+use base qw/DBIx::Class/;
 
 sub validate {
    my $self = shift;
@@ -135,3 +135,42 @@ sub update {
 }
 
 1;
+__END__
+
+=encoding utf-8
+
+=head1 NAME
+
+DBIx::Class::Validation::Structure - DBIx::Class Validation based on the column meta data
+
+=head1 SYNOPSIS
+
+  package MyApp::Schema::Result::Artist;
+  use base qw/DBIx::Class::Core/;
+
+  __PACKAGE__->table('artist');
+  __PACKAGE__->add_columns(qw/ artistid name /);
+  __PACKAGE__->set_primary_key('artistid');
+  __PACKAGE__->has_many(cds => 'MyApp::Schema::Result::CD');
+
+
+=head1 DESCRIPTION
+
+DBIx::Class::Validation::Structure is DBIx::Class Validation based on the column meta data set in add_columns or add_column.
+
+=head1 AUTHOR
+
+Sean Zellmer E<lt>sean@lejeunerenard.comE<gt>
+
+=head1 COPYRIGHT
+
+Copyright 2013- Sean Zellmer
+
+=head1 LICENSE
+
+This library is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself.
+
+=head1 SEE ALSO
+
+=cut
