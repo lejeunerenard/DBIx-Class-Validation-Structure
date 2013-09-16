@@ -7,6 +7,8 @@ DBIx::Class::Validation::Structure - DBIx::Class Validation based on the column 
     package MyApp::Schema::Result::Artist;
     use base qw/DBIx::Class::Core/;
 
+    __PACKAGE__->load_components(qw/Validation::Structure/);
+
     __PACKAGE__->table('artist');
     __PACKAGE__->add_columns(qw/ artistid name /);
     __PACKAGE__->set_primary_key('artistid');
