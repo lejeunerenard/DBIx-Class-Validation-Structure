@@ -2,5 +2,9 @@ Revision history for DBIx-Class-Validation-Structure
 
 {{$NEXT}}
 
+0.04  2013-09-15 22:10:27 CDT
+        - Added Validation subroutines into Module
+        - Wrote tests for validation subroutines
+
 0.03  2013-09-15 19:44:47 CDT
         - Initial release
