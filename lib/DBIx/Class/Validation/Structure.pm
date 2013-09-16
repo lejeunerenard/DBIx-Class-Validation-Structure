@@ -5,6 +5,9 @@ use warnings;
 use 5.008_005;
 our $VERSION = '0.03';
 
+use Email::Valid;
+use HTML::TagFilter;
+
 use base qw/DBIx::Class/;
 
 sub validate {
@@ -44,33 +47,33 @@ sub validate {
             my $val_type = (defined $columns->{$column}{val_override}) ? $columns->{$column}{val_override} : $columns->{$column}{data_type};
 
             if ($val_type eq 'email') {
-               ($data{$column}, $error) = Validate::Validate::val_email( $mand, $data{$column} );
+               ($data{$column}, $error) = _val_email( $mand, $data{$column} );
                   if ( $error-> { msg } ) { push @error_list, { $column => $error->{ msg } }; }
             } elsif ($val_type eq 'varchar' or $val_type eq 'text') {
-               ($data{$column}, $error) = Validate::Validate::val_text( $mand, $columns->{$column}{size}, $data{$column} );
+               ($data{$column}, $error) = _val_text( $mand, $columns->{$column}{size}, $data{$column} );
                   if ( $error-> { msg } ) { push @error_list, { $column => $error->{ msg } }; }
             } elsif ($val_type eq 'password') {
-               ($data{$column}, $error) = Validate::Validate::val_password( $mand, $columns->{$column}{size}, $data{$column} );
+               ($data{$column}, $error) = _val_password( $mand, $columns->{$column}{size}, $data{$column} );
                   if ( $error-> { msg } ) { push @error_list, { $column => $error->{ msg } }; }
             } elsif ($val_type eq 'selected') {
             
                if ($columns->{$column}{data_type} eq 'varchar' or $columns->{$column}{data_type} eq 'text') {
-                  ($data{$column}, $error) = Validate::Validate::val_text( 0, $columns->{$column}{size}, $data{$column} );
+                  ($data{$column}, $error) = _val_text( 0, $columns->{$column}{size}, $data{$column} );
                      if ( $error-> { msg } ) { push @error_list, { $column => $error->{ msg } }; }
                } else {
-                  ($data{$column}, $error) = Validate::Validate::val_int( 0, $data{$column} );
+                  ($data{$column}, $error) = _val_int( 0, $data{$column} );
                      if ( $error-> { msg } ) { push @error_list, { $column => $error->{ msg } }; }
                }
-               ($data{$column}, $error) = Validate::Validate::val_selected( $data{$column} );
+               ($data{$column}, $error) = _val_selected( $data{$column} );
                   if ( $error-> { msg } ) { push @error_list, { $column => $error->{ msg } }; }
             } elsif ($val_type eq 'integer' or $val_type =~ /int/g) {
-               ($data{$column}, $error) = Validate::Validate::val_int( $mand, $data{$column} );
+               ($data{$column}, $error) = _val_int( $mand, $data{$column} );
                   if ( $error-> { msg } ) { push @error_list, { $column => $error->{ msg } }; }
             } elsif ($val_type eq 'number') {
-               ($data{$column}, $error) = Validate::Validate::val_number( $mand, $columns->{$column}{size}, $data{$column} );
+               ($data{$column}, $error) = _val_number( $mand, $columns->{$column}{size}, $data{$column} );
                   if ( $error-> { msg } ) { push @error_list, { $column => $error->{ msg } }; }
             } else {
-               ($data{$column}, $error) = Validate::Validate::val_text( $mand, $columns->{$column}{size}, $data{$column} );
+               ($data{$column}, $error) = _val_text( $mand, $columns->{$column}{size}, $data{$column} );
                   if ( $error-> { msg } ) { push @error_list, { $column => $error->{ msg } }; }
             }
 
@@ -133,6 +136,110 @@ sub update {
       $self->next::method(@_);
    }
 }
+
+# =============== Validatators ===============
+
+sub _val_email { 
+	my ($mand, $value) = @_;
+   if (not defined $value) { $value = ''; }
+	if ( !Email::Valid->address($value) && $mand ) { 
+		return ( undef, { msg => 'address is blank or not valid' }	);
+	} elsif ( !Email::Valid->address($value) && $value ) {
+		return ( undef, { msg => 'address is blank or not valid' }	);
+	} else {
+		return $value;
+	}
+}
+
+sub _val_text {
+	my ($mand, $len, $value) = @_;
+
+	# To ensure the text is correctly encoded etc. SZ 7/12/12
+	#my $decoder = Encode::Guess->guess($value);	# First guess the decoder
+	#if (ref($decoder)){
+	#	$value = $decoder->decode($value);	# If a decoder is found, then decode.
+	#}
+	#$value = Encode::encode_utf8($value);	# If there is no decoder, assume its UTF8
+
+	if ($mand && (!$value || $value =~ /bogus="1"/)) {  #tiny mce
+		return (undef, { msg => 'cannot be blank' });
+	} elsif ($len && (length($value) > $len) ) {
+		return (undef, { msg => 'is limited to '.$len.' characters' });
+	} elsif ($value && $value !~ /^([\w \.\,\-\'\"\!\$\#\%\=\&\:\+\(\)\?\;\n\r\<\>\/\@äÄöÖüÜßéÉáÁíÍ]*)$/) {
+		return (undef, { msg => 'can only use letters, 0-9 and -.,\'\"!&#$?:()=%<>;/@ (do not cut and paste from a Word document, you must Save As text only)' });
+	} else {
+		my $tf = new HTML::TagFilter;
+		if ($value) {	# This is to prevent empty strings from returning as the folder name.
+			return ($tf->filter($1));	# $1 is a tricky value. If value is blank $1 will be the name of the folder from the instance script.
+		} else {
+			return '';	# Take that $1. Conditional statement to the face.
+		}
+	}
+}
+
+sub _val_password {
+	my ($mand, $len, $value) = @_;
+
+	# To ensure the text is correctly encoded etc. SZ 7/12/12
+	#my $decoder = Encode::Guess->guess($value);	# First guess the decoder
+	#if (ref($decoder)){
+	#	$value = $decoder->decode($value);	# If a decoder is found, then decode.
+	#}
+	#$value = Encode::encode_utf8($value);	# If there is no decoder, assume its UTF8
+
+	if ($mand && (!$value || $value =~ /bogus="1"/)) {  #tiny mce
+		return (undef, { msg => 'cannot be blank' });
+	} elsif ($len && (length($value) > $len) ) {
+		return (undef, { msg => 'is limited to '.$len.' characters' });
+	} elsif ($value && $value !~ /^([\w \.\,\-\'\"\!\$\#\%\=\&\:\+\(\)\{\}\?\;\n\r\<\>\/\@äÄöÖüÜßéÉáÁíÍ]*)$/) {
+		return (undef, { msg => 'can only use letters, 0-9 and -.,\'\"!&#$?:()=%<>;/@ (do not cut and paste from a Word document, you must Save As text only)' });
+	} else {
+		my $tf = new HTML::TagFilter;
+		if ($value) {	# This is to prevent empty strings from returning as the folder name.
+			return ($tf->filter($1));	# $1 is a tricky value. If value is blank $1 will be the name of the folder from the instance script.
+		} else {
+			return '';	# Take that $1. Conditional statement to the face.
+		}
+	}
+}
+
+sub _val_int {
+	my ($mand, $value) = @_;
+	if ( ( $value ne '0' or not defined $value) && !$value && $mand ) {
+		return (undef, { msg => 'cannot be blank.' });
+	} elsif ( ( $value or $value eq '0' ) and $value !~ /^[-]?\d+$/) {
+		return (undef, { msg => 'can only use numbers' });
+	} else {
+    	return ($value);
+	}
+}
+
+sub _val_selected {
+	my ($value) = @_;
+	if (! defined $value or $value eq '') {
+		return (undef, { msg => 'must be selected' });
+	} else {
+		return $value;
+	}
+}
+
+sub _val_number {
+	my ($mand, $len, $value) = @_;
+	if ((!defined $value or $value eq '') && $mand) {
+		return (undef, { msg => 'cannot be blank' });
+	} elsif ($len && (length($value) > $len) ) {
+		return (undef, { msg => 'is limited to '.$len.' characters' });
+	} elsif ($value !~ /^([-\.]*\d[\d\.-]*)$/) {
+		return (undef, { msg => 'can only use numbers and . or -' });
+	} else {
+		if ($value ne '') {	# This is to prevent empty strings from returning as the folder name.
+			return ($1);	# $1 is a tricky value. If value is blank $1 will be the name of the folder from the instance script.
+		} else {
+			return '';	# Take that $1. Conditional statement to the face.
+		}
+	}
+}
+
 
 1;
 __END__
