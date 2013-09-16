@@ -34,3 +34,8 @@ This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself.
 
 # SEE ALSO
+
+- [DBIx::Class](http://search.cpan.org/perldoc?DBIx::Class)
+- [DBIx::Class::Validation](http://search.cpan.org/perldoc?DBIx::Class::Validation)
+- [Email::Valid](http://search.cpan.org/perldoc?Email::Valid)
+- [HTML::TagFilter](http://search.cpan.org/perldoc?HTML::TagFilter)
