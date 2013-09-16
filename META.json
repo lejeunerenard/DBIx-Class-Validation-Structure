@@ -48,15 +48,15 @@
    "release_status" : "stable",
    "resources" : {
       "bugtracker" : {
-         "web" : "https://github.com/lejeunerenard/DBIx-Class-Validation-DBStruct/issues"
+         "web" : "https://github.com/lejeunerenard/DBIx-Class-Validation-Structure/issues"
       },
-      "homepage" : "https://github.com/lejeunerenard/DBIx-Class-Validation-DBStruct",
+      "homepage" : "https://github.com/lejeunerenard/DBIx-Class-Validation-Structure",
       "repository" : {
          "type" : "git",
-         "url" : "https://github.com/lejeunerenard/DBIx-Class-Validation-DBStruct.git",
-         "web" : "https://github.com/lejeunerenard/DBIx-Class-Validation-DBStruct"
+         "url" : "https://github.com/lejeunerenard/DBIx-Class-Validation-Structure.git",
+         "web" : "https://github.com/lejeunerenard/DBIx-Class-Validation-Structure"
       }
    },
-   "version" : "0.01"
+   "version" : "0.03"
 }
 

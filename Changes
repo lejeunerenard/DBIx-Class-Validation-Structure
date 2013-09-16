@@ -1,4 +1,6 @@
 Revision history for DBIx-Class-Validation-Structure
 
 {{$NEXT}}
+
+0.03  2013-09-15 19:44:47 CDT
         - Initial release
