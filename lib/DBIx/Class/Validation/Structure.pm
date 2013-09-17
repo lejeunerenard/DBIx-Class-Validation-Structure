@@ -206,9 +206,9 @@ sub _val_password {
 
 sub _val_int {
 	my ($mand, $value) = @_;
-	if ( ( $value ne '0' or not defined $value) && !$value && $mand ) {
+	if ( (not( defined $value ) or $value ne '0') && !$value && $mand ) {
 		return (undef, { msg => 'cannot be blank' });
-	} elsif ( ( $value or $value eq '0' ) and $value !~ /^[-]?\d+$/) {
+	} elsif ( ( defined $value and ( $value or $value eq '0' ) ) and $value !~ /^[-]?\d+$/) {
 		return (undef, { msg => 'can only use numbers' });
 	} else {
     	return ($value);
@@ -217,7 +217,7 @@ sub _val_int {
 
 sub _val_selected {
 	my ($value) = @_;
-	if (! defined $value or $value eq '') {
+	if (not defined $value or $value eq '') {
 		return (undef, { msg => 'must be selected' });
 	} else {
 		return $value;
