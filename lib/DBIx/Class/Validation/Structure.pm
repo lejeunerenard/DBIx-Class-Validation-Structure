@@ -3,7 +3,7 @@ package DBIx::Class::Validation::Structure;
 use strict;
 use warnings;
 use 5.008_005;
-our $VERSION = '0.06';
+our $VERSION = '0.07';
 
 use Email::Valid;
 use HTML::TagFilter;

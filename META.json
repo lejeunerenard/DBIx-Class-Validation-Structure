@@ -60,7 +60,7 @@
          "web" : "https://github.com/lejeunerenard/DBIx-Class-Validation-Structure"
       }
    },
-   "version" : "0.06",
+   "version" : "0.07",
    "x_contributors" : [
       "Sean Zellmer <sean@lejeunerenard.com>"
    ]
