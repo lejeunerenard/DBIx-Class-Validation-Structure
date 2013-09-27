@@ -41,6 +41,7 @@ sub validate {
                info => $columns->{$column},
                value => $data{$column},
                data => \%data,
+               self => $self,
             );
                if ( $error-> { msg } ) { push @error_list, { $column => $error->{ msg } }; }
          } else {
