@@ -2,6 +2,9 @@ Revision history for DBIx-Class-Validation-Structure
 
 {{$NEXT}}
 
+0.08  2013-09-27 13:22:43 CDT
+        - Passes $self to Custom Validation Methods, so Validation can be based on relationships
+
 0.07  2013-09-17 11:32:41 CDT
         - Fixed Minor bugs
 
