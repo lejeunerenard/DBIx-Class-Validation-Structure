@@ -11,24 +11,30 @@ use HTML::TagFilter;
 use base qw/DBIx::Class/;
 
 sub validate {
-   my $self = shift;
-   my @check_columns = @_;
+  my $self = shift;
+  my @check_columns = @_;
 
-   my $check_columns = { map{ $_ => 1 } @check_columns } || {};
+  my $check_columns = { map{ $_ => 1 } @check_columns } || {};
 
-   my $source = $self->result_source;
-   my %data = $self->get_columns;
-   my $columns = $source->columns_info;
+  my $source = $self->result_source;
+  my %data = $self->get_columns;
+  my $columns = $source->columns_info;
 
-   # Get Hash with unique columns as keys
-   my $uniques = get_uniques($source);
+  # Get Hash with unique columns as keys
+  my $uniques = get_uniques($source);
 
-   # Get Hash of Primary keys
-   my @primary_key = $source->primary_columns();
-   my %unique_search_columns;
-   foreach ( @primary_key ) {
-    $unique_search_columns{$_} = { '!=' => $data{$_} } if defined $data{$_};
-   }
+  # Check if this is a SQLite DBI because SQLite screams if the field type is integer
+  # and you pass a blank string or undef. Since _val_int returns undef if the field is
+  # non-mandatory and not given a value, its best to set the value to 0 instead.
+  # @TODO figure out if this should be done elsewhere or if there is a less hacky workaround
+  my $is_sqlite = ($source->storage->isa('DBIx::Class::Storage::DBI::SQLite')) 1 ? 0;
+
+  # Get Hash of Primary keys
+  my @primary_key = $source->primary_columns();
+  my %unique_search_columns;
+  foreach ( @primary_key ) {
+   $unique_search_columns{$_} = { '!=' => $data{$_} } if defined $data{$_};
+  }
 
   my ($error, @error_list, $stmt);
 
@@ -65,12 +71,16 @@ sub validate {
                } else {
                   ($data{$column}, $error) = _val_int( 0, $data{$column} );
                      if ( $error-> { msg } ) { push @error_list, { $column => $error->{ msg } }; }
+                     # Ensure SQlite will be happy
+                     elsif ( $is_sqlite and not defined $data{$column} ) { $data{$column} = 0; }
                }
                ($data{$column}, $error) = _val_selected( $data{$column} );
                   if ( $error-> { msg } ) { push @error_list, { $column => $error->{ msg } }; }
             } elsif ($val_type eq 'integer' or $val_type =~ /int/g) {
                ($data{$column}, $error) = _val_int( $mand, $data{$column} );
                   if ( $error-> { msg } ) { push @error_list, { $column => $error->{ msg } }; }
+                  # Ensure SQlite will be happy
+                  elsif ( $is_sqlite and not defined $data{$column} ) { $data{$column} = 0; }
             } elsif ($val_type eq 'number') {
                ($data{$column}, $error) = _val_number( $mand, $columns->{$column}{size}, $data{$column} );
                   if ( $error-> { msg } ) { push @error_list, { $column => $error->{ msg } }; }

@@ -1,6 +1,8 @@
 Revision history for DBIx-Class-Validation-Structure
 
 {{$NEXT}}
+        - Return 0 for integer fields when using DBIx::Class::Storage::DBI::SQLite to
+          avoid errors
 
 0.08  2013-09-27 13:22:43 CDT
         - Passes $self to Custom Validation Methods, so Validation can be based on relationships
