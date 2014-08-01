@@ -30,7 +30,7 @@ sub validate {
     $unique_search_columns{$_} = { '!=' => $data{$_} } if defined $data{$_};
    }
 
-	my ($error, @error_list, $stmt);
+  my ($error, @error_list, $stmt);
 
    for my $column ( keys %$columns ) {
 
@@ -95,7 +95,7 @@ sub validate {
 
    $self->set_columns(\%data);
 
-	if (@error_list) {
+  if (@error_list) {
       return { 'errors' => \@error_list };
    }
    return {};
@@ -142,105 +142,105 @@ sub update {
 # =============== Validatators ===============
 
 sub _val_email { 
-	my ($mand, $value) = @_;
+  my ($mand, $value) = @_;
    if (not defined $value) { $value = ''; }
-	if ( !Email::Valid->address($value) && $mand ) { 
-		return ( undef, { msg => 'address is blank or not valid' }	);
-	} elsif ( !Email::Valid->address($value) && $value ) {
-		return ( undef, { msg => 'address is blank or not valid' }	);
-	} else {
-		return $value;
-	}
+  if ( !Email::Valid->address($value) && $mand ) { 
+    return ( undef, { msg => 'address is blank or not valid' }  );
+  } elsif ( !Email::Valid->address($value) && $value ) {
+    return ( undef, { msg => 'address is blank or not valid' }  );
+  } else {
+    return $value;
+  }
 }
 
 sub _val_text {
-	my ($mand, $len, $value) = @_;
+  my ($mand, $len, $value) = @_;
 
-	# To ensure the text is correctly encoded etc. SZ 7/12/12
-	#my $decoder = Encode::Guess->guess($value);	# First guess the decoder
-	#if (ref($decoder)){
-	#	$value = $decoder->decode($value);	# If a decoder is found, then decode.
-	#}
-	#$value = Encode::encode_utf8($value);	# If there is no decoder, assume its UTF8
+  # To ensure the text is correctly encoded etc. SZ 7/12/12
+  #my $decoder = Encode::Guess->guess($value);  # First guess the decoder
+  #if (ref($decoder)){
+  #  $value = $decoder->decode($value);  # If a decoder is found, then decode.
+  #}
+  #$value = Encode::encode_utf8($value);  # If there is no decoder, assume its UTF8
 
-	if ($mand && (!$value || $value =~ /bogus="1"/)) {  #tiny mce
-		return (undef, { msg => 'cannot be blank' });
-	} elsif ($len && length($value) && (length($value) > $len) ) {
-		return (undef, { msg => 'is limited to '.$len.' characters' });
-	} elsif ($value && $value !~ /^([\w \.\,\-\'\"\!\$\#\%\=\&\:\+\(\)\?\;\n\r\<\>\/\@äÄöÖüÜßéÉáÁíÍ]*)$/) {
-		return (undef, { msg => 'can only use letters, 0-9 and -.,\'\"!&#$?:()=%<>;/@ (do not cut and paste from a Word document, you must Save As text only)' });
-	} else {
-		my $tf = new HTML::TagFilter;
-		if ($value) {	# This is to prevent empty strings from returning as the last regex match.
-			return ($tf->filter($1));	# $1 is a tricky value. If value is blank $1 will be the last regex match.
-		} else {
-			return '';	# Take that $1. Conditional statement to the face.
-		}
-	}
+  if ($mand && (!$value || $value =~ /bogus="1"/)) {  #tiny mce
+    return (undef, { msg => 'cannot be blank' });
+  } elsif ($len && length($value) && (length($value) > $len) ) {
+    return (undef, { msg => 'is limited to '.$len.' characters' });
+  } elsif ($value && $value !~ /^([\w \.\,\-\'\"\!\$\#\%\=\&\:\+\(\)\?\;\n\r\<\>\/\@äÄöÖüÜßéÉáÁíÍ]*)$/) {
+    return (undef, { msg => 'can only use letters, 0-9 and -.,\'\"!&#$?:()=%<>;/@ (do not cut and paste from a Word document, you must Save As text only)' });
+  } else {
+    my $tf = new HTML::TagFilter;
+    if ($value) {  # This is to prevent empty strings from returning as the last regex match.
+      return ($tf->filter($1));  # $1 is a tricky value. If value is blank $1 will be the last regex match.
+    } else {
+      return '';  # Take that $1. Conditional statement to the face.
+    }
+  }
 }
 
 # _val_password is the same as _val_text but it also allows {}s
 sub _val_password {
-	my ($mand, $len, $value) = @_;
+  my ($mand, $len, $value) = @_;
 
-	# To ensure the text is correctly encoded etc. SZ 7/12/12
-	#my $decoder = Encode::Guess->guess($value);	# First guess the decoder
-	#if (ref($decoder)){
-	#	$value = $decoder->decode($value);	# If a decoder is found, then decode.
-	#}
-	#$value = Encode::encode_utf8($value);	# If there is no decoder, assume its UTF8
+  # To ensure the text is correctly encoded etc. SZ 7/12/12
+  #my $decoder = Encode::Guess->guess($value);  # First guess the decoder
+  #if (ref($decoder)){
+  #  $value = $decoder->decode($value);  # If a decoder is found, then decode.
+  #}
+  #$value = Encode::encode_utf8($value);  # If there is no decoder, assume its UTF8
 
-	if ($mand && (!$value || $value =~ /bogus="1"/)) {  #tiny mce
-		return (undef, { msg => 'cannot be blank' });
-	} elsif ($len && length($value) && (length($value) > $len) ) {
-		return (undef, { msg => 'is limited to '.$len.' characters' });
-	} elsif ($value && $value !~ /^([\w \.\,\-\'\"\!\$\#\%\=\&\:\+\(\)\{\}\?\;\n\r\<\>\/\@äÄöÖüÜßéÉáÁíÍ]*)$/) {
-		return (undef, { msg => 'can only use letters, 0-9 and -.,\'\"!&#$?:()=%<>;/@ (do not cut and paste from a Word document, you must Save As text only)' });
-	} else {
-		my $tf = new HTML::TagFilter;
-		if ($value) {	# This is to prevent empty strings from returning as the folder name.
-			return ($tf->filter($1));	# $1 is a tricky value. If value is blank $1 will be the name of the folder from the instance script.
-		} else {
-			return '';	# Take that $1. Conditional statement to the face.
-		}
-	}
+  if ($mand && (!$value || $value =~ /bogus="1"/)) {  #tiny mce
+    return (undef, { msg => 'cannot be blank' });
+  } elsif ($len && length($value) && (length($value) > $len) ) {
+    return (undef, { msg => 'is limited to '.$len.' characters' });
+  } elsif ($value && $value !~ /^([\w \.\,\-\'\"\!\$\#\%\=\&\:\+\(\)\{\}\?\;\n\r\<\>\/\@äÄöÖüÜßéÉáÁíÍ]*)$/) {
+    return (undef, { msg => 'can only use letters, 0-9 and -.,\'\"!&#$?:()=%<>;/@ (do not cut and paste from a Word document, you must Save As text only)' });
+  } else {
+    my $tf = new HTML::TagFilter;
+    if ($value) {  # This is to prevent empty strings from returning as the folder name.
+      return ($tf->filter($1));  # $1 is a tricky value. If value is blank $1 will be the name of the folder from the instance script.
+    } else {
+      return '';  # Take that $1. Conditional statement to the face.
+    }
+  }
 }
 
 sub _val_int {
-	my ($mand, $value) = @_;
-	if ( (not( defined $value ) or $value ne '0') && !$value && $mand ) {
-		return (undef, { msg => 'cannot be blank' });
-	} elsif ( ( defined $value and ( $value or $value eq '0' ) ) and $value !~ /^[-]?\d+$/) {
-		return (undef, { msg => 'can only use numbers' });
-	} else {
-    	return ($value);
-	}
+  my ($mand, $value) = @_;
+  if ( (not( defined $value ) or $value ne '0') && !$value && $mand ) {
+    return (undef, { msg => 'cannot be blank' });
+  } elsif ( ( defined $value and ( $value or $value eq '0' ) ) and $value !~ /^[-]?\d+$/) {
+    return (undef, { msg => 'can only use numbers' });
+  } else {
+      return ($value);
+  }
 }
 
 sub _val_selected {
-	my ($value) = @_;
-	if (not defined $value or $value eq '') {
-		return (undef, { msg => 'must be selected' });
-	} else {
-		return $value;
-	}
+  my ($value) = @_;
+  if (not defined $value or $value eq '') {
+    return (undef, { msg => 'must be selected' });
+  } else {
+    return $value;
+  }
 }
 
 sub _val_number {
-	my ($mand, $len, $value) = @_;
-	if ((!defined $value or $value eq '') && $mand) {
-		return (undef, { msg => 'cannot be blank' });
-	} elsif ($len && (length($value) > $len) ) {
-		return (undef, { msg => 'is limited to '.$len.' characters' });
-	} elsif ($value && $value !~ /^([-\.]*\d[\d\.-]*)$/) {
-		return (undef, { msg => 'can only use numbers and . or -' });
-	} else {
-		if ($value ne '') {	# This is to prevent empty strings from returning as the folder name.
-			return ($1);	# $1 is a tricky value. If value is blank $1 will be the name of the folder from the instance script.
-		} else {
-			return '';	# Take that $1. Conditional statement to the face.
-		}
-	}
+  my ($mand, $len, $value) = @_;
+  if ((!defined $value or $value eq '') && $mand) {
+    return (undef, { msg => 'cannot be blank' });
+  } elsif ($len && (length($value) > $len) ) {
+    return (undef, { msg => 'is limited to '.$len.' characters' });
+  } elsif ($value && $value !~ /^([-\.]*\d[\d\.-]*)$/) {
+    return (undef, { msg => 'can only use numbers and . or -' });
+  } else {
+    if ($value ne '') {  # This is to prevent empty strings from returning as the folder name.
+      return ($1);  # $1 is a tricky value. If value is blank $1 will be the name of the folder from the instance script.
+    } else {
+      return '';  # Take that $1. Conditional statement to the face.
+    }
+  }
 }
 
 
