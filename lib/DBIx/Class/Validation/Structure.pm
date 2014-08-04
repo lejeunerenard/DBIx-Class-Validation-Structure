@@ -20,105 +20,112 @@ sub validate {
   my %data = $self->get_columns;
   my $columns = $source->columns_info;
 
-  # Get Hash with unique columns as keys
-  my $uniques = get_uniques($source);
-
-  # Check if this is a SQLite DBI because SQLite screams if the field type is integer
-  # and you pass a blank string or undef. Since _val_int returns undef if the field is
-  # non-mandatory and not given a value, its best to set the value to 0 instead.
-  # @TODO figure out if this should be done elsewhere or if there is a less hacky workaround
-  my $is_sqlite = ($source->storage->isa('DBIx::Class::Storage::DBI::SQLite')) 1 ? 0;
-
-  # Get Hash of Primary keys
-  my @primary_key = $source->primary_columns();
-  my %unique_search_columns;
-  foreach ( @primary_key ) {
-   $unique_search_columns{$_} = { '!=' => $data{$_} } if defined $data{$_};
-  }
-
   my ($error, @error_list, $stmt);
 
-   for my $column ( keys %$columns ) {
+  for my $column ( keys %$columns ) {
 
-      if ( ( not keys %$check_columns ) or $check_columns->{$column} ) {
+    if ( ( not keys %$check_columns ) or $check_columns->{$column} ) {
 
-         if ($columns->{$column}{validation_function} and ref $columns->{$column}{validation_function} eq 'CODE' ) {
-            ($data{$column}, $error) = $columns->{$column}{validation_function}(
-               info => $columns->{$column},
-               value => $data{$column},
-               data => \%data,
-               self => $self,
-            );
-               if ( $error-> { msg } ) { push @error_list, { $column => $error->{ msg } }; }
-         } else {
-            my $mand = (defined $columns->{$column}{is_nullable} and $columns->{$column}{is_nullable} == 1 or ( defined $columns->{$column}{is_auto_increment} and $columns->{$column}{is_auto_increment} == 1 ) ) ? 0 : 1;
-            my $val_type = (defined $columns->{$column}{val_override}) ? $columns->{$column}{val_override} : $columns->{$column}{data_type};
+      if ($columns->{$column}{validation_function} and ref $columns->{$column}{validation_function} eq 'CODE' ) {
+        ($data{$column}, $error) = $columns->{$column}{validation_function}(
+          info => $columns->{$column},
+          value => $data{$column},
+          data => \%data,
+          self => $self,
+        );
+        if ( $error-> { msg } ) { push @error_list, { $column => $error->{ msg } }; }
+      } else {
+        my $mand = (defined $columns->{$column}{is_nullable} and $columns->{$column}{is_nullable} == 1 or ( defined $columns->{$column}{is_auto_increment} and $columns->{$column}{is_auto_increment} == 1 ) ) ? 0 : 1;
+        my $val_type = (defined $columns->{$column}{val_override}) ? $columns->{$column}{val_override} : $columns->{$column}{data_type};
 
-            if ($val_type eq 'email') {
-               ($data{$column}, $error) = _val_email( $mand, $data{$column} );
-                  if ( $error-> { msg } ) { push @error_list, { $column => $error->{ msg } }; }
-            } elsif ($val_type eq 'varchar' or $val_type eq 'text') {
-               ($data{$column}, $error) = _val_text( $mand, $columns->{$column}{size}, $data{$column} );
-                  if ( $error-> { msg } ) { push @error_list, { $column => $error->{ msg } }; }
-            } elsif ($val_type eq 'password') {
-               ($data{$column}, $error) = _val_password( $mand, $columns->{$column}{size}, $data{$column} );
-                  if ( $error-> { msg } ) { push @error_list, { $column => $error->{ msg } }; }
-            } elsif ($val_type eq 'selected') {
-            
-               if ($columns->{$column}{data_type} eq 'varchar' or $columns->{$column}{data_type} eq 'text') {
-                  ($data{$column}, $error) = _val_text( 0, $columns->{$column}{size}, $data{$column} );
-                     if ( $error-> { msg } ) { push @error_list, { $column => $error->{ msg } }; }
-               } else {
-                  ($data{$column}, $error) = _val_int( 0, $data{$column} );
-                     if ( $error-> { msg } ) { push @error_list, { $column => $error->{ msg } }; }
-                     # Ensure SQlite will be happy
-                     elsif ( $is_sqlite and not defined $data{$column} ) { $data{$column} = 0; }
-               }
-               ($data{$column}, $error) = _val_selected( $data{$column} );
-                  if ( $error-> { msg } ) { push @error_list, { $column => $error->{ msg } }; }
-            } elsif ($val_type eq 'integer' or $val_type =~ /int/g) {
-               ($data{$column}, $error) = _val_int( $mand, $data{$column} );
-                  if ( $error-> { msg } ) { push @error_list, { $column => $error->{ msg } }; }
-                  # Ensure SQlite will be happy
-                  elsif ( $is_sqlite and not defined $data{$column} ) { $data{$column} = 0; }
-            } elsif ($val_type eq 'number') {
-               ($data{$column}, $error) = _val_number( $mand, $columns->{$column}{size}, $data{$column} );
-                  if ( $error-> { msg } ) { push @error_list, { $column => $error->{ msg } }; }
-            } else {
-               ($data{$column}, $error) = _val_text( $mand, $columns->{$column}{size}, $data{$column} );
-                  if ( $error-> { msg } ) { push @error_list, { $column => $error->{ msg } }; }
-            }
+        if ($val_type eq 'email') {
+          ($data{$column}, $error) = _val_email( $mand, $data{$column} );
+          if ( $error-> { msg } ) { push @error_list, { $column => $error->{ msg } }; }
+        } elsif ($val_type eq 'varchar' or $val_type eq 'text') {
+          ($data{$column}, $error) = _val_text( $mand, $columns->{$column}{size}, $data{$column} );
+          if ( $error-> { msg } ) { push @error_list, { $column => $error->{ msg } }; }
+        } elsif ($val_type eq 'password') {
+          ($data{$column}, $error) = _val_password( $mand, $columns->{$column}{size}, $data{$column} );
+          if ( $error-> { msg } ) { push @error_list, { $column => $error->{ msg } }; }
+        } elsif ($val_type eq 'selected') {
+          if ($columns->{$column}{data_type} eq 'varchar' or $columns->{$column}{data_type} eq 'text') {
+            ($data{$column}, $error) = _val_text( 0, $columns->{$column}{size}, $data{$column} );
+            if ( $error-> { msg } ) { push @error_list, { $column => $error->{ msg } }; }
+          } else {
+            ($data{$column}, $error) = _val_int( 0, $data{$column} );
+            if ( $error-> { msg } ) { push @error_list, { $column => $error->{ msg } }; }
+          }
+          ($data{$column}, $error) = _val_selected( $data{$column} );
+          if ( $error-> { msg } ) { push @error_list, { $column => $error->{ msg } }; }
+        } elsif ($val_type eq 'integer' or $val_type =~ /int/g) {
+          ($data{$column}, $error) = _val_int( $mand, $data{$column} );
+          if ( $error-> { msg } ) { push @error_list, { $column => $error->{ msg } }; }
+        } elsif ($val_type eq 'number') {
+          ($data{$column}, $error) = _val_number( $mand, $columns->{$column}{size}, $data{$column} );
+          if ( $error-> { msg } ) { push @error_list, { $column => $error->{ msg } }; }
+        } else {
+          ($data{$column}, $error) = _val_text( $mand, $columns->{$column}{size}, $data{$column} );
+          if ( $error-> { msg } ) { push @error_list, { $column => $error->{ msg } }; }
+        }
 
-            # If the column is auto_increment and there is no value set, set it to undef
-            $data{$column} = undef if $columns->{$column}{is_auto_increment} and not $data{$column};
-
-            if ( $uniques->{$column} and not defined $unique_search_columns{$column} ) {
-               # Columns for unique search
-               my %this_unique_search_columns = %unique_search_columns;
-               $this_unique_search_columns{ $column } = $data{$column};
-
-               push @error_list, { $column => "already exists" } if $source->resultset->count(\%this_unique_search_columns);
-            }
-         }
+        # If the column is auto_increment and there is no value set, set it to undef
+        # @TODO decide if this should be deleted all together
+        $data{$column} = undef if $columns->{$column}{is_auto_increment} and not $data{$column};
       }
-   }
+    }
+  }
 
-   $self->set_columns(\%data);
+  unless (@error_list) {
+    # Check the unique constraints
+    @error_list = check_uniques($source, \%data);
+  }
+
+  $self->set_columns(\%data);
 
   if (@error_list) {
-      return { 'errors' => \@error_list };
-   }
-   return {};
+    return { 'errors' => \@error_list };
+  }
+  return {};
 }
 
-sub get_uniques {
-   my %unique_constraints = shift->unique_constraints();
+sub check_uniques {
+  my $source = shift;
+  my $data = shift;
+  my %unique_constraints = $source->unique_constraints();
 
-   my @uniques; 
-   @uniques = ( @uniques, @{$_} ) foreach ( values %unique_constraints );
+  my %errors;
 
-   # Make sure you have unique 'uniques'
-   return { map { $_ => 1 } @uniques };
+  foreach my $constraint ( keys %unique_constraints ) {
+    my $search = {
+      map { $_ => $data->{$_}, } @{ $unique_constraints{$constraint} }
+    };
+    # If there is an entry with the combined value defined above...
+    if ( $source->resultset->count($search) ) {
+      foreach my $key ( @{ $unique_constraints{$constraint} } ) {
+        $errors{$key} = [] unless defined $errors{$key};
+        my @other_fields = @{ $unique_constraints{$constraint} };
+        # Remove the field so we get a list of other fields in the
+        # combination
+        my $index = 0;
+        $index++ until $other_fields[$index] eq $key;
+        splice(@other_fields, $index, 1);
+        # If there are no keys other than the key that isnt unique,
+        # then write the error as singular else explain the combination.
+        if ( $#other_fields >= 0 ) {
+          push @{$errors{$key}}, { $key => 'must be unique when combined with '.join(', ',@other_fields) };
+        } else {
+          push @{$errors{$key}}, { $key => 'must be unique' };
+        }
+      }
+    }
+  }
+
+  if ( %errors ) {
+    # Convert hash into the array of hashrefs like the validate returns
+    return map { { $_ => join( ' and ', map { values $_ } @{ $errors{$_} } ) } } keys %errors;
+  } else {
+    return ();
+  }
 }
 
 sub insert {
@@ -151,10 +158,10 @@ sub update {
 
 # =============== Validatators ===============
 
-sub _val_email { 
+sub _val_email {
   my ($mand, $value) = @_;
    if (not defined $value) { $value = ''; }
-  if ( !Email::Valid->address($value) && $mand ) { 
+  if ( !Email::Valid->address($value) && $mand ) {
     return ( undef, { msg => 'address is blank or not valid' }  );
   } elsif ( !Email::Valid->address($value) && $value ) {
     return ( undef, { msg => 'address is blank or not valid' }  );

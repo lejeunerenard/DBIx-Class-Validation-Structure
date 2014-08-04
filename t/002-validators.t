@@ -1,4 +1,9 @@
 use strict;
+
+use lib './local/lib/perl5';
+use lib qw{ ./t/lib };
+
+
 use Test::More;
 use DBIx::Class::Validation::Structure;
 

@@ -14,8 +14,6 @@ DBIx::Class::Validation::Structure - DBIx::Class Validation based on the column 
     __PACKAGE__->set_primary_key('artistid');
     __PACKAGE__->has_many(cds => 'MyApp::Schema::Result::CD');
 
-
-
 # DESCRIPTION
 
 DBIx::Class::Validation::Structure is DBIx::Class Validation based on the column meta data set in add\_columns or add\_column.
@@ -35,7 +33,7 @@ it under the same terms as Perl itself.
 
 # SEE ALSO
 
-- [DBIx::Class](http://search.cpan.org/perldoc?DBIx::Class)
-- [DBIx::Class::Validation](http://search.cpan.org/perldoc?DBIx::Class::Validation)
-- [Email::Valid](http://search.cpan.org/perldoc?Email::Valid)
-- [HTML::TagFilter](http://search.cpan.org/perldoc?HTML::TagFilter)
+- [DBIx::Class](https://metacpan.org/pod/DBIx::Class)
+- [DBIx::Class::Validation](https://metacpan.org/pod/DBIx::Class::Validation)
+- [Email::Valid](https://metacpan.org/pod/Email::Valid)
+- [HTML::TagFilter](https://metacpan.org/pod/HTML::TagFilter)
