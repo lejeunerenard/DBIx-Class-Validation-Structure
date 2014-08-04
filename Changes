@@ -1,6 +1,8 @@
 Revision history for DBIx-Class-Validation-Structure
 
 {{$NEXT}}
+
+0.09  2014-08-04 14:50:40 CDT
         - Changed Uniqueness validation to follow combined unique constraints
 
 0.08  2013-09-27 13:22:43 CDT
