@@ -77,7 +77,7 @@ sub validate {
 
   unless (@error_list) {
     # Check the unique constraints
-    @error_list = check_uniques($source, \%data);
+    @error_list = check_uniques($self, \%data);
   }
 
   $self->set_columns(\%data);
@@ -88,17 +88,45 @@ sub validate {
   return {};
 }
 
+# Returns whether any of the primary columns have changed
+# @TODO Write tests for this function
+sub primary_cols_have_changed {
+  my $self = shift;
+  foreach ( $self->result_source->primary_columns ) {
+    return 1 if $self->is_column_changed($_);
+  }
+
+  return 0;
+}
+
 sub check_uniques {
-  my $source = shift;
+  my $self = shift;
   my $data = shift;
+  my $source = $self->result_source;
   my %unique_constraints = $source->unique_constraints();
 
   my %errors;
 
   foreach my $constraint ( keys %unique_constraints ) {
+
+    # Skip the primary constraint uniqueness test if self is in_storage
+    # and the primary columns haven't changed
+    next if $constraint eq 'primary' and $self->in_storage and not primary_cols_have_changed($self);
+
     my $search = {
       map { $_ => $data->{$_}, } @{ $unique_constraints{$constraint} }
     };
+
+    # Exclude this entries primary keys to the search for dupes
+    # to not detect itself when updating.
+    unless ( $constraint eq 'primary' ) {
+      for my $column ( $source->primary_columns ) {
+        $search->{$column} = {
+          '!=' => $data->{$column},
+        };
+      }
+    }
+
     # If there is an entry with the combined value defined above...
     if ( $source->resultset->count($search) ) {
       foreach my $key ( @{ $unique_constraints{$constraint} } ) {

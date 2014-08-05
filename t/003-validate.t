@@ -4,14 +4,15 @@ use warnings;
 use lib './local/lib/perl5';
 use lib qw{ ./t/lib };
 
-use Test::More tests => 4;
+use Test::More tests => 6;
 use Test::Exception;
 use Test::Warnings qw/:no_end_test :all/;
 use Test::DBIx::Class {
   schema_class => 'test::Schema',
 }, 'User';
+my $first_user;
 my $create_warns = warning {
-  User->create({
+  $first_user = User->create({
     id => '',
     email => 'test@example.com',
     first_name => 'Alice',
@@ -72,3 +73,19 @@ is_deeply User->create({
     { 'last_name'   => 'must be unique when combined with suffix and must be unique when combined with first_name, middle_name', },
   ],
 }, 'Dupe with two unique constraints returns combined error message';
+
+isa_ok $first_user->update({
+    email => 'alice@example.com',
+  }), 'DBIx::Class::Core';
+
+is_deeply User->create({
+    id => $first_user->id,
+    email => 'bob@example.com',
+    first_name => 'Bob',
+    last_name => 'Builder',
+    suffix => 'A.C.E.',
+  }), {
+    errors => [
+      { 'id'      => 'must be unique', },
+    ],
+  }, 'Cannot dupe primary keys';
