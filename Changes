@@ -1,6 +1,8 @@
 Revision history for DBIx-Class-Validation-Structure
 
 {{$NEXT}}
+
+0.10  2014-08-05 13:14:35 CDT
         - Made exception for primary keys from unique constraints test when validating result from storage.
 
 0.09  2014-08-04 14:50:40 CDT
