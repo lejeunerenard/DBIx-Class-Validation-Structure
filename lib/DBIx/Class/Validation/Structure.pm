@@ -150,7 +150,7 @@ sub check_uniques {
 
   if ( %errors ) {
     # Convert hash into the array of hashrefs like the validate returns
-    return map { { $_ => join( ' and ', map { values $_ } @{ $errors{$_} } ) } } keys %errors;
+    return map { { $_ => join( ' and ', map { values %$_ } @{ $errors{$_} } ) } } keys %errors;
   } else {
     return ();
   }
