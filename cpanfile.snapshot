@@ -3442,6 +3442,17 @@ DISTRIBUTIONS
       Test::Builder::Tester 1.02
       Test::More 0
       perl 5.006
+  Test-Warnings-0.016
+    pathname: E/ET/ETHER/Test-Warnings-0.016.tar.gz
+    provides:
+      Test::Warnings 0.016
+    requirements:
+      Exporter 0
+      ExtUtils::MakeMaker 6.30
+      Test::Builder 0
+      parent 0
+      strict 0
+      warnings 0
   Test-use-ok-0.11
     pathname: A/AU/AUDREYT/Test-use-ok-0.11.tar.gz
     provides:

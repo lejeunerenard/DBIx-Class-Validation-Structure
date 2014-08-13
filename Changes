@@ -1,6 +1,8 @@
 Revision history for DBIx-Class-Validation-Structure
 
 {{$NEXT}}
+        - Check Column custom selection applies to unique constraints now
+        - Fix for using values with older versions of perl
 
 0.10  2014-08-05 13:14:35 CDT
         - Made exception for primary keys from unique constraints test when validating result from storage.
