@@ -8,4 +8,5 @@ on test => sub {
     requires 'Test::More', '0.88';
     requires 'Test::DBIx::Class';
     requires 'Test::Warnings';
+    requires 'DBD::SQLite';
 };
