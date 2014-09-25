@@ -1,6 +1,8 @@
 Revision history for DBIx-Class-Validation-Structure
 
 {{$NEXT}}
+
+0.12  2014-09-25 00:02:43 CDT
         - Fixed tests for newer versions of perl ( < 5.18.0 )
         - Combined unique error messages are consistently generated
 

@@ -26,7 +26,7 @@
    "prereqs" : {
       "configure" : {
          "requires" : {
-            "Module::Build::Tiny" : "0.035"
+            "Module::Build::Tiny" : "0.038"
          }
       },
       "develop" : {
@@ -44,6 +44,7 @@
       },
       "test" : {
          "requires" : {
+            "DBD::SQLite" : "0",
             "Test::DBIx::Class" : "0",
             "Test::More" : "0.88",
             "Test::Warnings" : "0"
@@ -62,6 +63,6 @@
          "web" : "https://github.com/lejeunerenard/DBIx-Class-Validation-Structure"
       }
    },
-   "version" : "0.11"
+   "version" : "0.12"
 }
 
