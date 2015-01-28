@@ -1,6 +1,8 @@
 Revision history for DBIx-Class-Validation-Structure
 
 {{$NEXT}}
+
+0.13  2015-01-27 20:52:19 CST
         - Allow '0' and other numbers as a valid input for _val_text
 
 0.12  2014-09-25 00:02:43 CDT
