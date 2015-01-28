@@ -1,6 +1,7 @@
 Revision history for DBIx-Class-Validation-Structure
 
 {{$NEXT}}
+        - Allow '0' and other numbers as a valid input for _val_text
 
 0.12  2014-09-25 00:02:43 CDT
         - Fixed tests for newer versions of perl ( < 5.18.0 )

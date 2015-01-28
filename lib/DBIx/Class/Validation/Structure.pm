@@ -204,23 +204,15 @@ sub _val_email {
 sub _val_text {
   my ($mand, $len, $value) = @_;
 
-  # To ensure the text is correctly encoded etc. SZ 7/12/12
-  #my $decoder = Encode::Guess->guess($value);  # First guess the decoder
-  #if (ref($decoder)){
-  #  $value = $decoder->decode($value);  # If a decoder is found, then decode.
-  #}
-  #$value = Encode::encode_utf8($value);  # If there is no decoder, assume its UTF8
-
-  if ($mand && (!$value || $value =~ /bogus="1"/)) {  #tiny mce
+  if ($mand && ( not( defined $value ) or $value eq '' )) {
     return (undef, { msg => 'cannot be blank' });
   } elsif ($len && length($value) && (length($value) > $len) ) {
     return (undef, { msg => 'is limited to '.$len.' characters' });
-  } elsif ($value && $value !~ /^([\w \.\,\-\'\"\!\$\#\%\=\&\:\+\(\)\?\;\n\r\<\>\/\@äÄöÖüÜßéÉáÁíÍ]*)$/) {
+  } elsif (defined $value && $value !~ /^([\d\w \.\,\-\'\"\!\$\#\%\=\&\:\+\(\)\?\;\n\r\<\>\/\@äÄöÖüÜßéÉáÁíÍ]*)$/) {
     return (undef, { msg => 'can only use letters, 0-9 and -.,\'\"!&#$?:()=%<>;/@ (do not cut and paste from a Word document, you must Save As text only)' });
   } else {
-    my $tf = new HTML::TagFilter;
-    if ($value) {  # This is to prevent empty strings from returning as the last regex match.
-      return ($tf->filter($1));  # $1 is a tricky value. If value is blank $1 will be the last regex match.
+    if (defined $value) {  # This is to prevent empty strings from returning as the last regex match.
+      return ($1);  # $1 is a tricky value. If value is blank $1 will be the last regex match.
     } else {
       return '';  # Take that $1. Conditional statement to the face.
     }

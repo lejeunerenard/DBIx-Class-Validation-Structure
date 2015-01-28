@@ -34,6 +34,7 @@ is_deeply([DBIx::Class::Validation::Structure::_val_text(0,8,undef)], [ '' ], 'I
 is_deeply([DBIx::Class::Validation::Structure::_val_text(0,8,'')], [ '' ], 'Is NOT Mandatory and is blank should return blank');
 # Properly formatted text
 is_deeply([DBIx::Class::Validation::Structure::_val_text(0,32,'Hello this is a test.')], [ 'Hello this is a test.' ], 'Is NOT Mandatory and a valid value should return the value');
+is_deeply([DBIx::Class::Validation::Structure::_val_text(0,32,'0')], [ '0' ], 'Is NOT Mandatory and a falsy valid value should return the same value');
 
 # ----- Testing _val_password -----
 
