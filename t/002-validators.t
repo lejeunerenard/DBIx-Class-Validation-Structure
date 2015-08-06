@@ -3,6 +3,8 @@ use strict;
 use lib './local/lib/perl5';
 use lib qw{ ./t/lib };
 
+use utf8;
+
 use Test::More;
 use DBIx::Class::Validation::Structure;
 
@@ -77,7 +79,7 @@ subtest '_val_text' => sub {
 
         # Malformated text
         is_deeply(
-            [ DBIx::Class::Validation::Structure::_val_text( $mand, 8, 'Ç' ) ],
+            [ DBIx::Class::Validation::Structure::_val_text( $mand, 8, '•' ) ],
             [
                 undef,
                 {
@@ -144,7 +146,7 @@ subtest '_val_password' => sub {
 
         # Malformated password
         is_deeply(
-            [ DBIx::Class::Validation::Structure::_val_password( $mand, 8, 'Ç' ) ],
+            [ DBIx::Class::Validation::Structure::_val_password( $mand, 8, '•' ) ],
             [
                 undef,
                 {

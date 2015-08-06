@@ -10,6 +10,8 @@ use HTML::TagFilter;
 
 use base qw/DBIx::Class/;
 
+use utf8;
+
 sub validate {
   my $self = shift;
   my @check_columns = @_;
@@ -208,7 +210,7 @@ sub _val_text {
     return (undef, { msg => 'cannot be blank' });
   } elsif ($len && length($value) && (length($value) > $len) ) {
     return (undef, { msg => 'is limited to '.$len.' characters' });
-  } elsif (defined $value && $value !~ /^([\d\w \.\,\-\'\"\!\$\#\%\=\&\:\+\(\)\?\;\n\r\<\>\/\@äÄöÖüÜßéÉáÁíÍ]*)$/) {
+  } elsif (defined $value && $value !~ /^([\d \.\,\-\'\"\!\$\#\%\=\&\:\+\(\)\?\;\n\r\<\>\/\@\w]*)$/) {
     return (undef, { msg => 'can only use letters, 0-9 and -.,\'\"!&#$?:()=%<>;/@ (do not cut and paste from a Word document, you must Save As text only)' });
   } else {
     if (defined $value) {  # This is to prevent empty strings from returning as the last regex match.
@@ -234,7 +236,7 @@ sub _val_password {
     return (undef, { msg => 'cannot be blank' });
   } elsif ($len && length($value) && (length($value) > $len) ) {
     return (undef, { msg => 'is limited to '.$len.' characters' });
-  } elsif ($value && $value !~ /^([\w \.\,\-\'\"\!\$\#\%\=\&\:\+\(\)\{\}\?\;\n\r\<\>\/\@äÄöÖüÜßéÉáÁíÍ]*)$/) {
+  } elsif ($value && $value !~ /^([\w \.\,\-\'\"\!\$\#\%\=\&\:\+\(\)\{\}\?\;\n\r\<\>\/\@\w]*)$/) {
     return (undef, { msg => 'can only use letters, 0-9 and -.,\'\"!&#$?:()=%<>;/@ (do not cut and paste from a Word document, you must Save As text only)' });
   } else {
     my $tf = new HTML::TagFilter;
