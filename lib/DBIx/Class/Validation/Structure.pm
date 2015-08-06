@@ -210,8 +210,8 @@ sub _val_text {
     return (undef, { msg => 'cannot be blank' });
   } elsif ($len && length($value) && (length($value) > $len) ) {
     return (undef, { msg => 'is limited to '.$len.' characters' });
-  } elsif (defined $value && $value !~ /^([\d \.\,\-\'\"\!\$\#\%\=\&\:\+\(\)\?\;\n\r\<\>\/\@\w]*)$/) {
-    return (undef, { msg => 'can only use letters, 0-9 and -.,\'\"!&#$?:()=%<>;/@ (do not cut and paste from a Word document, you must Save As text only)' });
+  } elsif (defined $value && $value !~ /^([\d \.\,\-\'\"\!\$\#\%\=\&\:\+\(\)\[\]\?\;\n\r\<\>\/\@\w]*)$/) {
+    return (undef, { msg => 'can only use letters, 0-9 and -.,\'\"!&#$?:()[]=%<>;/@ (do not cut and paste from a Word document, you must Save As text only)' });
   } else {
     if (defined $value) {  # This is to prevent empty strings from returning as the last regex match.
       return ($1);  # $1 is a tricky value. If value is blank $1 will be the last regex match.
@@ -236,8 +236,8 @@ sub _val_password {
     return (undef, { msg => 'cannot be blank' });
   } elsif ($len && length($value) && (length($value) > $len) ) {
     return (undef, { msg => 'is limited to '.$len.' characters' });
-  } elsif ($value && $value !~ /^([\w \.\,\-\'\"\!\$\#\%\=\&\:\+\(\)\{\}\?\;\n\r\<\>\/\@\w]*)$/) {
-    return (undef, { msg => 'can only use letters, 0-9 and -.,\'\"!&#$?:()=%<>;/@ (do not cut and paste from a Word document, you must Save As text only)' });
+  } elsif ($value && $value !~ /^([\w \.\,\-\'\"\!\$\#\%\=\&\:\+\(\)\[\]\{\}\?\;\n\r\<\>\/\@\w]*)$/) {
+    return (undef, { msg => 'can only use letters, 0-9 and -.,\'\"!&#$?:()[]=%<>;/@ (do not cut and paste from a Word document, you must Save As text only)' });
   } else {
     my $tf = new HTML::TagFilter;
     if ($value) {  # This is to prevent empty strings from returning as the folder name.

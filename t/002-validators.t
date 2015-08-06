@@ -84,7 +84,7 @@ subtest '_val_text' => sub {
                 undef,
                 {
                     msg =>
-'can only use letters, 0-9 and -.,\'\"!&#$?:()=%<>;/@ (do not cut and paste from a Word document, you must Save As text only)'
+'can only use letters, 0-9 and -.,\'\"!&#$?:()[]=%<>;/@ (do not cut and paste from a Word document, you must Save As text only)'
                 }
             ],
 'a invalid value should give "can only use letters..." error'
@@ -151,7 +151,7 @@ subtest '_val_password' => sub {
                 undef,
                 {
                     msg =>
-'can only use letters, 0-9 and -.,\'\"!&#$?:()=%<>;/@ (do not cut and paste from a Word document, you must Save As text only)'
+'can only use letters, 0-9 and -.,\'\"!&#$?:()[]=%<>;/@ (do not cut and paste from a Word document, you must Save As text only)'
                 }
             ],
 'a invalid value should give "can only use letters..." error'
