@@ -213,10 +213,11 @@ sub _val_text {
   } elsif (defined $value && $value !~ /^([\d \.\,\-\'\"\!\$\#\%\=\&\:\+\(\)\[\]\?\;\n\r\<\>\/\@\w]*)$/) {
     return (undef, { msg => 'can only use letters, 0-9 and -.,\'\"!&#$?:()[]=%<>;/@ (do not cut and paste from a Word document, you must Save As text only)' });
   } else {
-    if (defined $value) {  # This is to prevent empty strings from returning as the last regex match.
-      return ($1);  # $1 is a tricky value. If value is blank $1 will be the last regex match.
+    # This is to ensure that $1 is from the last regex match
+    if (defined $value) {
+      return ($1);
     } else {
-      return '';  # Take that $1. Conditional statement to the face.
+      return $value;
     }
   }
 }
@@ -233,10 +234,11 @@ sub _val_password {
     return (undef, { msg => 'can only use letters, 0-9 and -.,\'\"!&#$?:()[]=%<>;/@ (do not cut and paste from a Word document, you must Save As text only)' });
   } else {
     my $tf = new HTML::TagFilter;
-    if ($value) {  # This is to prevent empty strings from returning as the folder name.
-      return ($tf->filter($1));  # $1 is a tricky value. If value is blank $1 will be the name of the folder from the instance script.
+    # This is to ensure that $1 is from the last regex match
+    if ($value) {
+      return ($tf->filter($1));
     } else {
-      return '';  # Take that $1. Conditional statement to the face.
+      return $value;
     }
   }
 }
@@ -270,10 +272,11 @@ sub _val_number {
   } elsif ($value && $value !~ /^([-\.]*\d[\d\.-]*)$/) {
     return (undef, { msg => 'can only use numbers and . or -' });
   } else {
-    if ($value ne '') {  # This is to prevent empty strings from returning as the folder name.
-      return ($1);  # $1 is a tricky value. If value is blank $1 will be the name of the folder from the instance script.
+    # This is to ensure that $1 is from the last regex match
+    if ($value) {
+      return ($1);
     } else {
-      return '';  # Take that $1. Conditional statement to the face.
+      return $value;
     }
   }
 }

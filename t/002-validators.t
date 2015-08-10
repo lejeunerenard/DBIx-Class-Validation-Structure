@@ -93,7 +93,7 @@ subtest '_val_text' => sub {
         # Undef and non-mandatory text
         is_deeply(
             [ DBIx::Class::Validation::Structure::_val_text( $mand, 8, undef ) ],
-            [''], 'is undefined should return blank' );
+            [undef], 'is undefined should return undef' );
 
         # Blank and non-mandatory text
         is_deeply(
@@ -164,8 +164,8 @@ subtest '_val_password' => sub {
                     $mand, 8, undef
                 )
             ],
-            [''],
-            'is undefined should return blank'
+            [undef],
+            'is undefined should return undef'
         );
 
         # Blank and non-mandatory password
