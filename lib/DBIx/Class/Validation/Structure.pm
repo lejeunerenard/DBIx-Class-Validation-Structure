@@ -225,13 +225,6 @@ sub _val_text {
 sub _val_password {
   my ($mand, $len, $value) = @_;
 
-  # To ensure the text is correctly encoded etc. SZ 7/12/12
-  #my $decoder = Encode::Guess->guess($value);  # First guess the decoder
-  #if (ref($decoder)){
-  #  $value = $decoder->decode($value);  # If a decoder is found, then decode.
-  #}
-  #$value = Encode::encode_utf8($value);  # If there is no decoder, assume its UTF8
-
   if ($mand && (!$value || $value =~ /bogus="1"/)) {  #tiny mce
     return (undef, { msg => 'cannot be blank' });
   } elsif ($len && length($value) && (length($value) > $len) ) {
