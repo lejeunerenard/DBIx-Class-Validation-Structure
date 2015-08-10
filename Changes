@@ -2,6 +2,13 @@ Revision history for DBIx-Class-Validation-Structure
 
 {{$NEXT}}
 
+0.15  2015-08-10 10:59:51 CDT
+        - _val_text, _val_password & _val_number should not set default value to a blank string
+
+          *Note:* This may cause breakage in some uses of this module because end users
+          may have relied on this default value for their databases. Instead
+          those users should set the `default_value` for those columns.
+
 0.14  2015-08-06 14:01:17 CDT
         - Use utf8 to include all letter characters in _val_text * _val_password
         - Refactor validator tests to use subtests
